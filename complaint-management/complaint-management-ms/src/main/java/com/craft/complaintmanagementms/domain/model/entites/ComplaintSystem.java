@@ -21,14 +21,14 @@ public class ComplaintSystem {
     private UUID userId;
     private String subject;
     private String complaint;
-    private UUID associatedPurchase;
+    private UUID purchaseId;
     private Date createdTime;
 
-    public ComplaintSystem(UUID userId, String subject, String complaint, UUID associatedPurchase, Date createdTime) {
+    public ComplaintSystem(UUID userId, String subject, String complaint, UUID purchaseId, Date createdTime) {
         this.userId = userId;
         this.subject = subject;
         this.complaint = complaint;
-        this.associatedPurchase = associatedPurchase;
+        this.purchaseId = purchaseId;
         this.createdTime = createdTime;
     }
 }

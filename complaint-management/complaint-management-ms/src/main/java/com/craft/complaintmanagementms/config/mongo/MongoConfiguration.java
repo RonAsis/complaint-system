@@ -66,9 +66,12 @@ public class MongoConfiguration extends BaseMongoConfiguration {
         return MongoClients.create(getMongoClientSettings(connectionString));
     }
 
+    /**
+     * create mongo client settings
+     */
     private MongoClientSettings getMongoClientSettings(String connectionString) {
         return MongoClientSettings.builder().
-                uuidRepresentation(UuidRepresentation.JAVA_LEGACY).
+                uuidRepresentation(UuidRepresentation.JAVA_LEGACY).//its enable to save UUID in MONGO DB
                 applyConnectionString(new ConnectionString(connectionString)).build();
     }
 
