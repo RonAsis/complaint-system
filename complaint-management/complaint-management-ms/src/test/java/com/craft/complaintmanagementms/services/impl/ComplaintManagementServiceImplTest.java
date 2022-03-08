@@ -7,14 +7,13 @@ import com.craft.complaintmanagementms.domain.repositores.ComplaintSystemReposit
 import com.craft.complaintmanagementms.notfication.senders.ComplaintManagementNotificationSender;
 import com.craft.complaintmanagementms.services.conveters.ComplaintManagementConverter;
 import com.craft.complaintmanagementms.services.rests.ExternalManagementSystemService;
-import com.craft.complaintmanagementms.services.utils.AsyncRunner;
+import com.craft.complaint.common.utils.AsyncRunner;
 import com.github.rozidan.springboot.modelmapper.WithModelMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
@@ -26,7 +25,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.Date;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(SpringExtension.class)

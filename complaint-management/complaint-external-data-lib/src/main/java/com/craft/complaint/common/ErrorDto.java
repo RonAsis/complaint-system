@@ -1,4 +1,4 @@
-package com.craft.complaint.management.api.dtos;
+package com.craft.complaint.common;
 
 import lombok.Builder;
 import lombok.Data;

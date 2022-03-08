@@ -1,6 +1,7 @@
 package com.craft.complaintmanagementms.services.rests;
 
 import com.craft.complaint.external.data.AdditionalData;
+import com.craft.complaint.common.utils.RestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;

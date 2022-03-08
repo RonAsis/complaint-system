@@ -1,6 +1,6 @@
 package com.craft.complaintmanagementms.web.handlers;
 
-import com.craft.complaint.management.api.dtos.ErrorDto;
+import com.craft.complaint.common.ErrorDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;

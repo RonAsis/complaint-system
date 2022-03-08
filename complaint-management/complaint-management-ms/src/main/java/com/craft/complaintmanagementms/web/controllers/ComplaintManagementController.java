@@ -4,7 +4,7 @@ package com.craft.complaintmanagementms.web.controllers;
 import com.craft.complaint.management.api.dtos.BaseComplaintSystemDto;
 import com.craft.complaint.management.api.dtos.ComplaintSystemDto;
 import com.craft.complaint.management.api.dtos.CreateComplaintSystemRequest;
-import com.craft.complaint.management.api.dtos.ErrorDto;
+import com.craft.complaint.common.ErrorDto;
 import com.craft.complaintmanagementms.services.ComplaintManagementService;
 import com.craft.complaintmanagementms.web.annontation.DurationLog;
 import io.swagger.annotations.Api;
@@ -22,12 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.UUID;
 
 @Api(tags = "Complaints manager apis")
 @RestController

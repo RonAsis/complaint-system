@@ -11,7 +11,7 @@ import com.craft.complaintmanagementms.notfication.senders.ComplaintManagementNo
 import com.craft.complaintmanagementms.services.ComplaintManagementService;
 import com.craft.complaintmanagementms.services.conveters.ComplaintManagementConverter;
 import com.craft.complaintmanagementms.services.rests.ExternalManagementSystemService;
-import com.craft.complaintmanagementms.services.utils.AsyncRunner;
+import com.craft.complaint.common.utils.AsyncRunner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

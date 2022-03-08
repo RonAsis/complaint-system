@@ -2,7 +2,7 @@ package com.craft.complaintmanagementms.notfication.senders;
 
 import com.craft.complaint.management.api.notfication.ComplaintManagementNotificationMessageQIF;
 import com.craft.complaint.management.api.notfication.ComplaintSystemNotification;
-import com.craft.complaintmanagementms.services.utils.AsyncRunner;
+import com.craft.complaint.common.utils.AsyncRunner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
