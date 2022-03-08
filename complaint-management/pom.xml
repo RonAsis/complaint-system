@@ -6,6 +6,7 @@
 	<modules>
 		<module>complaint-management-api</module>
 		<module>complaint-management-ms</module>
+		<module>complaint-external-data-lib</module>
     </modules>
 	<parent>
 		<groupId>org.springframework.boot</groupId>

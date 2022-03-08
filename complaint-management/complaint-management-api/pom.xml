@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
 
-    <artifactId>client</artifactId>
+    <artifactId>complaint-management-api</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -33,5 +33,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        		<dependency>
+        			<groupId>com.craft</groupId>
+        			<artifactId>complaint-external-data-lib</artifactId>
+        			<version>0.0.1-SNAPSHOT</version>
+        			<scope>system</scope>
+        			<systemPath>${basedir}/external-lib/complaint-external-data-lib-0.0.1-SNAPSHOT.jar</systemPath>
+        		</dependency>
     </dependencies>
 </project>
