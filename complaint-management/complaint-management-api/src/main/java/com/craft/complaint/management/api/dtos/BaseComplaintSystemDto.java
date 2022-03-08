@@ -2,22 +2,19 @@ package com.craft.complaint.management.api.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.UUID;
 
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BaseComplaintSystemDto {
+public class BaseComplaintSystemDto extends CreateComplaintSystemRequest{
 
     private String id;
-    private UUID userId;
-    private String subject;
-    private String complaint;
-    private UUID associatedPurchase;
     private Date createdTime;
 
 }

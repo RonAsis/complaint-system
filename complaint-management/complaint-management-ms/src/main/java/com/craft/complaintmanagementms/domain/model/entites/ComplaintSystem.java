@@ -1,5 +1,6 @@
 package com.craft.complaintmanagementms.domain.model.entites;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

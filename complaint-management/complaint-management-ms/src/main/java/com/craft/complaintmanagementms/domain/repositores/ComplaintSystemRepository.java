@@ -11,12 +11,4 @@ public interface ComplaintSystemRepository extends MongoRepository<ComplaintSyst
 
     List<ComplaintSystem> findAllByIdIn(List<String> ids);
 
-
-    ////////////////////// inner interfaces  ///////////////////////
-
-    interface IdInjection {
-
-        String getId();
-    }
-
 }

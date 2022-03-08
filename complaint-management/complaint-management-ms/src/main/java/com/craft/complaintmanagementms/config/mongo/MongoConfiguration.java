@@ -1,7 +1,10 @@
 package com.craft.complaintmanagementms.config.mongo;
 
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import org.bson.UuidRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,8 +62,14 @@ public class MongoConfiguration extends BaseMongoConfiguration {
         } else {
             connectionString = String.format("mongodb://%s:%s/%s", host, port, database);
         }
-        return MongoClients.create(connectionString);
+
+        return MongoClients.create(getMongoClientSettings(connectionString));
     }
 
+    private MongoClientSettings getMongoClientSettings(String connectionString) {
+        return MongoClientSettings.builder().
+                uuidRepresentation(UuidRepresentation.JAVA_LEGACY).
+                applyConnectionString(new ConnectionString(connectionString)).build();
+    }
 
 }
