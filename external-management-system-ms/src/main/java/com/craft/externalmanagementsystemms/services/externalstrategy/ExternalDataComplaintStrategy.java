@@ -8,6 +8,8 @@ import com.craft.externalmanagementsystemms.domain.model.entites.RegisterLoading
 import com.craft.externalmanagementsystemms.domain.repositores.ComplaintSystemAdditionalDataRepository;
 import com.craft.externalmanagementsystemms.domain.repositores.RegisterLoadingExternalDataRepository;
 import com.craft.externalmanagementsystemms.web.annontation.DurationLog;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
@@ -24,6 +26,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class ExternalDataComplaintStrategy {
 
     protected AtomicBoolean isInProcess = new AtomicBoolean(false);
+
+    protected ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     protected AsyncRunner asyncRunner;
@@ -114,8 +118,12 @@ public abstract class ExternalDataComplaintStrategy {
     protected void saveExternalDataIntoCompliant(RegisterLoadingExternalData registerLoadingExternalData, ResponseEntity<Object> data) {
         complaintSystemAdditionalDataRepository.findById(registerLoadingExternalData.getComplaintId())
                 .ifPresent(complaintSystemAdditionalData -> {
-                    complaintSystemAdditionalData.addAdditionalData(convert(data.getBody()));
-                    complaintSystemAdditionalDataRepository.save(complaintSystemAdditionalData);
+                    try {
+                        complaintSystemAdditionalData.addAdditionalData(convert(data.getBody()));
+                        complaintSystemAdditionalDataRepository.save(complaintSystemAdditionalData);
+                    } catch (JsonProcessingException e) {
+                       log.error("Failed to convert {} to {} type", data.getBody(), getDataType());
+                    }
                 });
     }
 
@@ -127,7 +135,7 @@ public abstract class ExternalDataComplaintStrategy {
 
     public abstract RegisterLoadingExternalData createRegisterLoadingExternalData(BaseComplaintSystemDto baseComplaintSystemDto);
 
-    public abstract AdditionalData convert(Object body);
+    public abstract AdditionalData convert(Object body) throws JsonProcessingException;
 
     public abstract DataType getDataType();
 }
