@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -33,6 +34,9 @@ import static org.mockito.ArgumentMatchers.any;
         ComplaintManagementServiceImpl.class,
         ComplaintManagementConverter.class
 })
+@MockBeans(
+        @MockBean(ComplaintManagementNotificationSender.class)
+)
 @WithModelMapper
 @DataMongoTest
 @EnableMongoRepositories("com.craft.complaintmanagementms.domain.repositores")
@@ -41,17 +45,14 @@ public class ComplaintManagementServiceImplTest {
     @Autowired
     private ComplaintManagementServiceImpl complaintManagementService;
 
+    @Autowired
+    private ComplaintSystemRepository complaintSystemRepository;
+
     @MockBean
     private ExternalManagementSystemService externalManagementSystemService;
 
     @MockBean
-    private ComplaintManagementNotificationSender complaintManagementNotificationSender;
-
-    @MockBean
     private AsyncRunner asyncRunner;
-
-    @Autowired
-    private ComplaintSystemRepository complaintSystemRepository;
 
     @Test
     void createCompliantSystem() {
