@@ -14,5 +14,7 @@ public interface ExternalManagementSystemService {
 
     void registerNewComplaintSystem(BaseComplaintSystemDto baseComplaintSystemDto);
 
-    void unRegisterComplaintSystem(BaseComplaintSystemDto baseComplaintSystemDto);
+    void deleteComplaintSystemData(BaseComplaintSystemDto baseComplaintSystemDto);
+
+    void applyLoadingData();
 }

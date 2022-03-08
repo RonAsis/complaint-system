@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @Document
@@ -18,11 +19,26 @@ public class ComplaintSystemAdditionalData {
 
     @Id
     private String id;
-    private List<AdditionalData> additionalData;
+    private List<AdditionalData> additionalDatas;
     @Version
     private String version;
 
     public ComplaintSystemAdditionalData(String id) {
+        this(id, null);
+    }
+
+    public ComplaintSystemAdditionalData(String id, AdditionalData additionalData) {
         this.id = id;
+
+        this.additionalDatas = new LinkedList<>();
+
+        if(additionalData != null){
+            this.additionalDatas.add(additionalData);;
+        }
+
+    }
+
+    public void addAdditionalData(AdditionalData additionalData) {
+        additionalDatas.add(additionalData);
     }
 }

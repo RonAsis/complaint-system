@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
  * Base configuration for mongodb
  */
 @Configuration
-@EnableMongoRepositories(basePackages = "com.craft.complaintmanagementms.domain.repositores")
+@EnableMongoRepositories(basePackages = "com.craft.externalmanagementsystemms.domain.repositores")
 public abstract class BaseMongoConfiguration extends AbstractMongoClientConfiguration {
 	
 	/**

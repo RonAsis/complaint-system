@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Slf4j
-public class ComplaintManagementConfig extends NotifConfig{
+public class ComplaintManagementConfig{
 
     private static final String QUEUE_NAME_PREFIX = "EMS-COMPLAINT-MANAGEMENT";
 
@@ -26,7 +26,7 @@ public class ComplaintManagementConfig extends NotifConfig{
 
     @Bean
     public Queue complaintManagementQueue() {
-        return createAnonymousQueue(QUEUE_NAME_PREFIX);
+        return new Queue(QUEUE_NAME_PREFIX);
     }
 
     @Bean

@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -52,5 +53,17 @@ public class ExternalManagementSystemController {
     @GetMapping("/complaints/{id}")
     public List<AdditionalData> getComplaintSystemAdditionalData(@Validated @NotBlank @PathVariable(name = "id") String id){
         return externalManagementSystemService.getComplaintSystemAdditionalData(id);
+    }
+
+
+    @DurationLog
+    @ApiOperation(value = "Apply loading data")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Apply loading data succeed"),
+            @ApiResponse(code = 400, message = "Apply loading data failed", response = ErrorDto.class),
+    })
+    @PutMapping("/loading-data")
+    public void applyLoadingData(){
+        externalManagementSystemService.applyLoadingData();
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ComplaintSystemRepository extends MongoRepository<ComplaintSystemAdditionalData, String> {
+public interface ComplaintSystemAdditionalDataRepository extends MongoRepository<ComplaintSystemAdditionalData, String> {
 
     List<ComplaintSystemAdditionalData> findAllByIdIn(List<String> ids);
 
