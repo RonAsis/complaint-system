@@ -4,6 +4,7 @@ import com.craft.complaint.management.api.notfication.ComplaintManagementNotific
 import com.craft.complaint.management.api.notfication.ComplaintSystemNotification;
 import com.craft.externalmanagementsystemms.services.impl.ExternalManagementSystemServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class ComplaintManagementNotificationReceiver implements ComplaintManagem
 
     /////////////////////////////////// receive /////////////////////////////////////
 
+    @RabbitHandler
     @Override
     public void receive(ComplaintSystemNotification complaintSystemNotification) {
         switch (complaintSystemNotification.getNotificationType()){

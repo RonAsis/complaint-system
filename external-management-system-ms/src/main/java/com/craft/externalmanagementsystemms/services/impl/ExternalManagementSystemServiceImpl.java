@@ -41,7 +41,6 @@ public class ExternalManagementSystemServiceImpl implements ExternalManagementSy
     }
 
     @Override
-    @Transactional
     public void registerNewComplaintSystem(BaseComplaintSystemDto baseComplaintSystemDto) {
         if(baseComplaintSystemDto == null || baseComplaintSystemDto.getId() == null){
             return;

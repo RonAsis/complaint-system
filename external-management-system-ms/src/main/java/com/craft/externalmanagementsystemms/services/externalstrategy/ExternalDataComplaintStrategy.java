@@ -7,10 +7,10 @@ import com.craft.complaint.management.api.dtos.BaseComplaintSystemDto;
 import com.craft.externalmanagementsystemms.domain.model.entites.RegisterLoadingExternalData;
 import com.craft.externalmanagementsystemms.domain.repositores.ComplaintSystemAdditionalDataRepository;
 import com.craft.externalmanagementsystemms.domain.repositores.RegisterLoadingExternalDataRepository;
-import com.craft.externalmanagementsystemms.services.helpers.HelperPage;
 import com.craft.externalmanagementsystemms.web.annontation.DurationLog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public abstract class ExternalDataComplaintStrategy {
 
-    protected AtomicBoolean isInProcess;
+    protected AtomicBoolean isInProcess = new AtomicBoolean(false);
 
     @Autowired
     protected AsyncRunner asyncRunner;
@@ -55,10 +55,11 @@ public abstract class ExternalDataComplaintStrategy {
         int size = 0;
 
         AtomicBoolean isLast = new AtomicBoolean(false);
+        AtomicBoolean thereIsConnectionWithServer = new AtomicBoolean(true);
         List<RegisterLoadingExternalData> toRemove = new LinkedList<>();
 
-        while (!isLast.get()){
-            HelperPage<RegisterLoadingExternalData> allByDataType = externalDataRepository.findAllByDataType(getDataType(), pageable);
+        while (!isLast.get() && thereIsConnectionWithServer.get()){
+            PageImpl<RegisterLoadingExternalData> allByDataType = externalDataRepository.findAllByDataType(getDataType(), pageable);
 
             if(allByDataType.isEmpty()){
                 isLast.set(true);
@@ -78,7 +79,19 @@ public abstract class ExternalDataComplaintStrategy {
 
             asyncRunner.asynTaskNoPool(() ->{
                 for(RegisterLoadingExternalData registerLoadingExternalData: registerLoadingExternalDatas){
+
+                    if(!thereIsConnectionWithServer.get()){
+                        return;
+                    }
+
                     ResponseEntity<Object> data = getExternalDataById(registerLoadingExternalData);
+                    if(data == null){
+                        log.error("There is no connection with service that supply data for {}", getDataType());
+                        isLast.set(true);
+                        thereIsConnectionWithServer.set(false);
+                        externalDataJob.jobFinished();
+                        return;
+                    }
                     if(data.getBody() != null){
                         saveExternalDataIntoCompliant(registerLoadingExternalData, data);
                         toRemove.add(registerLoadingExternalData);
