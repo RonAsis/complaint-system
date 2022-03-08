@@ -87,7 +87,6 @@ public abstract class ExternalDataComplaintStrategy {
                     ResponseEntity<Object> data = getExternalDataById(registerLoadingExternalData);
                     if(data == null){
                         log.error("There is no connection with service that supply data for {}", getDataType());
-                        isLast.set(true);
                         thereIsConnectionWithServer.set(false);
                         externalDataJob.jobFinished();
                         return;
@@ -95,7 +94,6 @@ public abstract class ExternalDataComplaintStrategy {
                     if(data.getBody() != null){
                         saveExternalDataIntoCompliant(registerLoadingExternalData, data);
                         toRemove.add(registerLoadingExternalData);
-
                     }
                 }
             }, externalDataJob);
