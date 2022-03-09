@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+/**
+ * responsible for all the rest api to the user management system
+ */
 @Slf4j
 @Service
 public class UserManagementClient extends RestService {
@@ -18,6 +21,9 @@ public class UserManagementClient extends RestService {
     @Value("${user.management.url}")
     private String userManagementUrl;
 
+    /**
+     * rest api
+     */
     public ResponseEntity<ObjectNode> getUserData(UUID userId) {
         log.info("Start getUserData, userId: {} ", userId);
         String url = userManagementUrl + "/users/" + userId;

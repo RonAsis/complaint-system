@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+/**
+ * responsible for all the rest api to the purchase management system
+ */
 @Slf4j
 @Service
 public class PurchaseManagementClient extends RestService {
@@ -18,6 +21,9 @@ public class PurchaseManagementClient extends RestService {
     @Value("${purchase.management.url}")
     private String purchaseManagementUrl;
 
+    /**
+     * rest api
+     */
     public ResponseEntity<ObjectNode> getPurchaseData(UUID purchaseId) {
         log.info("Start getPurchaseData, userId: {} ", purchaseId);
         String url = purchaseManagementUrl + "/purchases/" + purchaseId;

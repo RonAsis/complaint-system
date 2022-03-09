@@ -33,6 +33,9 @@ public class ExternalManagementSystemController {
 
     private final ExternalManagementSystemService externalManagementSystemService;
 
+    /**
+     * give all the external data of specific complaint ids
+     */
     @DurationLog
     @ApiOperation(value = "Get Compliant System external data for ids")
     @ApiResponses({
@@ -44,6 +47,9 @@ public class ExternalManagementSystemController {
         return externalManagementSystemService.getComplaintSystemAdditionalData(ids);
     }
 
+    /**
+     * give all the external data of specific complaint id
+     */
     @DurationLog
     @ApiOperation(value = "Get Compliant System external data")
     @ApiResponses({
@@ -56,6 +62,9 @@ public class ExternalManagementSystemController {
     }
 
 
+    /**
+     * Trigger the loading data from external systems
+     */
     @DurationLog
     @ApiOperation(value = "Apply loading data")
     @ApiResponses({

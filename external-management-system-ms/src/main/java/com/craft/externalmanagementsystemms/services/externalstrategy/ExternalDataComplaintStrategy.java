@@ -24,22 +24,52 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * Abstract class for loading data from external resources.
+ * Using the Strategy pattern
+ */
 @Slf4j
 public abstract class ExternalDataComplaintStrategy {
 
+    ////////////////////////// data //////////////////////////////
+
+    /**
+     * if its found in process for know not schedule the process again(relevant only when schedule from external api)
+     */
     protected AtomicBoolean isInProcess = new AtomicBoolean(false);
 
+    ////////////////////////// converters //////////////////////////////
+
+    /**
+     * object mapper for convert data from api to structure data
+     */
     protected ObjectMapper objectMapper = new ObjectMapper();
 
+    ////////////////////////// services //////////////////////////////
+
+    /**
+     * service for run with thread
+     */
     @Autowired
     protected AsyncRunner asyncRunner;
 
+    /**
+     * register Loading External Data Repository
+     */
     @Autowired
-    protected RegisterLoadingExternalDataRepository externalDataRepository;
+    protected RegisterLoadingExternalDataRepository registerLoadingExternalDataRepository;
 
+    /**
+     * complaint System Additional DataR epository
+     */
     @Autowired
     protected ComplaintSystemAdditionalDataRepository complaintSystemAdditionalDataRepository;
 
+    ///////////////////////////// factories //////////////////////////////////////
+
+    /**
+     * create Register Loading External Data
+     */
     protected RegisterLoadingExternalData createRegisterLoadingExternalData(String complaintId, Object sourceId){
         RegisterLoadingExternalData registerLoadingExternalData = new RegisterLoadingExternalData();
 
@@ -50,6 +80,18 @@ public abstract class ExternalDataComplaintStrategy {
         return registerLoadingExternalData;
     }
 
+    ///////////////////////////// apply loading data //////////////////////////////////////
+
+    /**
+     * apply loading data for specific items
+     * <note>
+     *     All the rest calls that failed will be save in DB as RegisterLoadingExternalData and will be try again in the next Scheduled.
+     *     The relevant ComplaintSystemAdditionalData will set with the new values
+     * </note>
+     * <trigger>
+     *     When get new notification of complaint
+     * </trigger>
+     */
     public List<RegisterLoadingExternalData> applyLoadingData(List<RegisterLoadingExternalData> filterByType) {
         if(CollectionUtils.isEmpty(filterByType)){
             return filterByType;
@@ -75,7 +117,16 @@ public abstract class ExternalDataComplaintStrategy {
         return failedToLoading;
     }
 
-    @DurationLog
+    /**
+     * Loading data for all the RegisterLoadingExternalData that exists in DB.
+     * <note>
+     *     When its will be done, the RegisterLoadingExternalData will remove from DB.
+     *     The relevant ComplaintSystemAdditionalData will set with the new values
+     * </note>
+     * <trigger>
+     *     By Scheduled or external api
+     * </trigger>
+     */
     public void applyLoadingData() {
         isInProcess.set(true);
 
@@ -90,7 +141,7 @@ public abstract class ExternalDataComplaintStrategy {
         List<RegisterLoadingExternalData> toRemove = new LinkedList<>();
 
         while (!isLast.get() && thereIsConnectionWithServer.get()){
-            PageImpl<RegisterLoadingExternalData> allByDataType = externalDataRepository.findAllByDataType(getDataType(), pageable);
+            PageImpl<RegisterLoadingExternalData> allByDataType = registerLoadingExternalDataRepository.findAllByDataType(getDataType(), pageable);
 
             if(allByDataType.isEmpty()){
                 isLast.set(true);
@@ -133,14 +184,16 @@ public abstract class ExternalDataComplaintStrategy {
 
         externalDataJob.waitForAllJobsDone(size);
 
-        externalDataRepository.deleteAll(toRemove);
+        registerLoadingExternalDataRepository.deleteAll(toRemove);
 
         isInProcess.set(false);
     }
 
-    protected abstract ResponseEntity<ObjectNode> getExternalDataById(RegisterLoadingExternalData registerLoadingExternalData);
+    ///////////////////////////////// save in DB method /////////////////////////////
 
-
+    /**
+     * set the external data into the complaint object
+     */
     @Transactional
     protected void saveExternalDataIntoCompliant(RegisterLoadingExternalData registerLoadingExternalData, ResponseEntity<ObjectNode> data) {
         complaintSystemAdditionalDataRepository.findById(registerLoadingExternalData.getComplaintId())
@@ -154,9 +207,16 @@ public abstract class ExternalDataComplaintStrategy {
                 });
     }
 
+    ///////////////////////////////// is-methods /////////////////////////////
+
+    /**
+     * is in process
+     */
     public boolean isInProcess(){
         return isInProcess.get();
     }
+
+    ///////////////////////////////// converters /////////////////////////////
 
     public AdditionalData convert(ObjectNode body) throws JsonProcessingException {
         ObjectNode objectNodeData = objectMapper.createObjectNode();
@@ -165,6 +225,8 @@ public abstract class ExternalDataComplaintStrategy {
     }
 
     /////////////////// abstracts /////////////////////////
+
+    protected abstract ResponseEntity<ObjectNode> getExternalDataById(RegisterLoadingExternalData registerLoadingExternalData);
 
     public abstract RegisterLoadingExternalData createRegisterLoadingExternalData(BaseComplaintSystemDto baseComplaintSystemDto);
 
