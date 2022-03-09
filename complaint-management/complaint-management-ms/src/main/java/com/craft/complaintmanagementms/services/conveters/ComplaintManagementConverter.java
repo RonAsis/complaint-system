@@ -15,16 +15,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * conveter util
+ */
 @Service
 public class ComplaintManagementConverter {
 
+    /**
+     * model mapper for convert to dos
+     */
     private static ModelMapper modelMapper;
 
+    /**
+     * cons
+     */
     @Autowired
     public ComplaintManagementConverter(ModelMapper modelMapper){
         ComplaintManagementConverter.modelMapper = modelMapper;
     }
 
+    /**
+     * convert complaintSystem to BaseComplaintSystemDto
+     */
     public static BaseComplaintSystemDto convert(ComplaintSystem complaintSystem){
         if(complaintSystem == null){
             return new BaseComplaintSystemDto();
@@ -33,6 +45,9 @@ public class ComplaintManagementConverter {
         return modelMapper.map(complaintSystem, BaseComplaintSystemDto.class);
     }
 
+    /**
+     * convert complaintSystem and additionalData to ComplaintSystemDto
+     */
     public static ComplaintSystemDto convert(ComplaintSystem complaintSystem, List<AdditionalData> additionalData){
         if(complaintSystem == null){
             return new ComplaintSystemDto();
@@ -44,6 +59,9 @@ public class ComplaintManagementConverter {
         return complaintSystemDto;
     }
 
+    /**
+     * convert complaintSystem and idToAdditionalData to list of ComplaintSystemDto
+     */
     public static List<ComplaintSystemDto> convert(List<ComplaintSystem> complaintSystems, Map<String, List<AdditionalData>> idToAdditionalData) {
         if(CollectionUtils.isEmpty(complaintSystems)){
             return new LinkedList<>();

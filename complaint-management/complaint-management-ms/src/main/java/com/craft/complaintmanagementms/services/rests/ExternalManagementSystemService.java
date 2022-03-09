@@ -21,6 +21,9 @@ public class ExternalManagementSystemService extends RestService {
     @Value("${external.management.url}")
     private String externalManagementUrl;
 
+    /**
+     * get Additional Data that loading from external system by rest api to specific id
+     */
     public List<AdditionalData> getAdditionalData(String id) {
         Map<String, List<AdditionalData>> additionalData = getAdditionalData(Collections.singletonList(id));
 
@@ -31,6 +34,9 @@ public class ExternalManagementSystemService extends RestService {
         return additionalData.get(id);
     }
 
+    /**
+     * get Additional Data that loading from external system by rest api for all the ids
+     */
     public Map<String, List<AdditionalData>> getAdditionalData(List<String> ids) {
         log.info("Start getAdditionalData, ids: {} ",ids);
         String url = externalManagementUrl + "/external-data/complaints";

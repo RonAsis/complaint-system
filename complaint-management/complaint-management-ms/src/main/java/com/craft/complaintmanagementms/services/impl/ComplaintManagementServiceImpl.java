@@ -14,26 +14,46 @@ import com.craft.complaintmanagementms.services.rests.ExternalManagementSystemSe
 import com.craft.complaint.common.utils.AsyncRunner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Responsible for manage all the life cycle of Complaint System
+ */
 @Service
 @RequiredArgsConstructor
 public class ComplaintManagementServiceImpl implements ComplaintManagementService {
 
     //////////////////////////////// services //////////////////////////////////
 
+    /**
+     * complaint System Repository
+     */
     private final ComplaintSystemRepository complaintSystemRepository;
+    /**
+     * external Management System Service
+     */
     private final ExternalManagementSystemService externalManagementSystemService;
+    /**
+     * complaint Management Notification Sender
+     */
     private final ComplaintManagementNotificationSender complaintManagementNotificationSender;
+    /**
+     * async Runner for running in threads
+     */
     private final AsyncRunner asyncRunner;
 
     //////////////////////////////// creation methods ////////////////////////////////
 
+    /**
+     * create Compliant System
+     */
     @Override
     public BaseComplaintSystemDto createCompliantSystem(UUID userId, String subject, String complaint, UUID purchaseId) {
         ComplaintSystem complaintSystem = new ComplaintSystem(userId, subject, complaint, purchaseId, new Date());
@@ -48,8 +68,11 @@ public class ComplaintManagementServiceImpl implements ComplaintManagementServic
 
     //////////////////////////////// getters methods ////////////////////////////////
 
+    /**
+     * @return CompliantSystem by id
+     */
     @Override
-    public ComplaintSystemDto getCompliantSystemIds(String id) {
+    public ComplaintSystemDto getCompliantSystem(String id) {
         return complaintSystemRepository.findById(id)
                 .map(complaintSystem -> {
                     List<AdditionalData> additionalData = externalManagementSystemService.getAdditionalData(id);
@@ -58,6 +81,9 @@ public class ComplaintManagementServiceImpl implements ComplaintManagementServic
                 .orElseGet(ComplaintSystemDto::new);
     }
 
+    /**
+     * @return All CompliantSystem
+     */
     @Override
     public List<ComplaintSystemDto> getAllCompliantSystem() {
         List<ComplaintSystem> complaintSystems = complaintSystemRepository.findAll();
@@ -68,6 +94,9 @@ public class ComplaintManagementServiceImpl implements ComplaintManagementServic
         return ComplaintManagementConverter.convert(complaintSystems, idToAdditionalData);
     }
 
+    /**
+     * @return All CompliantSystem by ids
+     */
     @Override
     public List<ComplaintSystemDto> getCompliantSystemByIds(List<String> ids) {
         List<ComplaintSystem> complaintSystems = complaintSystemRepository.findAllByIdIn(ids);
@@ -79,12 +108,25 @@ public class ComplaintManagementServiceImpl implements ComplaintManagementServic
 
     /////////////////////// private use ///////////////////////////////
 
+    /**
+     * extract ids from list of ComplaintSystem
+     */
     private List<String> extractIds(List<ComplaintSystem> complaintSystems) {
+        if(CollectionUtils.isEmpty(complaintSystems)){
+            return new LinkedList<>();
+        }
+
         return complaintSystems.stream()
                 .map(ComplaintSystem::getId)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * send notification
+     * <note>
+     *     Its happened in different thread
+     * </note>
+     */
     private void sendNotification(BaseComplaintSystemDto baseComplaintSystemDto, ComplaintSystemNotificationType complaintSystemNotificationType) {
         asyncRunner.asynTaskNoPool(() ->
                 complaintManagementNotificationSender.sendNotification(ComplaintSystemNotification.builder()

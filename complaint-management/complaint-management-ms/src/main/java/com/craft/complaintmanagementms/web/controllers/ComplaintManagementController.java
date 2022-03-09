@@ -61,12 +61,15 @@ public class ComplaintManagementController {
           @ApiResponse(code = 400, message = "Get compliant system failed", response = ErrorDto.class),
   })
   @GetMapping("/{id}")
-  public ComplaintSystemDto  getCompliantSystem(@Validated @NotBlank @PathVariable(name = "id") String id){
-      return complaintManagementService.getCompliantSystemIds(id);
+  public ComplaintSystemDto getCompliantSystem(@Validated @NotBlank @PathVariable(name = "id") String id){
+      return complaintManagementService.getCompliantSystem(id);
   }
 
   //////////////////////////////////// for debugger //////////////////////////////////////////////
 
+  /**
+   * @return All Compliant System
+   */
   @DurationLog
   @ApiOperation(value = "Get all Compliant System")
   @ApiResponses({
@@ -78,6 +81,9 @@ public class ComplaintManagementController {
     return complaintManagementService.getAllCompliantSystem();
   }
 
+  /**
+   * @return All Compliant System by ids
+   */
   @DurationLog
   @ApiOperation(value = "Get all Compliant System in ids list")
   @ApiResponses({

@@ -10,6 +10,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * document that present the Complaint from the customer
+ */
 @Document
 @Data
 @AllArgsConstructor

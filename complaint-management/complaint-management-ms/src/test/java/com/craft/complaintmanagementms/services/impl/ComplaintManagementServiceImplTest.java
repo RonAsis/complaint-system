@@ -86,7 +86,7 @@ public class ComplaintManagementServiceImplTest {
         ComplaintSystem complaintSystemSaved = complaintSystemRepository.save(complaintSystem);
 
         //test
-        ComplaintSystemDto compliantSystem = complaintManagementService.getCompliantSystemIds(complaintSystemSaved.getId());
+        ComplaintSystemDto compliantSystem = complaintManagementService.getCompliantSystem(complaintSystemSaved.getId());
 
         //assertion
         Mockito.verify(externalManagementSystemService, Mockito.times(1)).getAdditionalData(any(String.class));

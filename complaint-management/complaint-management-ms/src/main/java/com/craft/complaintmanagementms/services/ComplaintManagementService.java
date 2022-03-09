@@ -10,7 +10,7 @@ public interface ComplaintManagementService {
 
     BaseComplaintSystemDto createCompliantSystem(UUID userId, String subject, String complaint, UUID purchaseId);
 
-    ComplaintSystemDto getCompliantSystemIds(String id);
+    ComplaintSystemDto getCompliantSystem(String id);
 
     List<ComplaintSystemDto> getAllCompliantSystem();
 
