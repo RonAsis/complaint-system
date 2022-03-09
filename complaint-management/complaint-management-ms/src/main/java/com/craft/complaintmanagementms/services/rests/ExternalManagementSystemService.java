@@ -33,7 +33,7 @@ public class ExternalManagementSystemService extends RestService {
 
     public Map<String, List<AdditionalData>> getAdditionalData(List<String> ids) {
         log.info("Start getAdditionalData, ids: {} ",ids);
-        String url = externalManagementUrl + "/complaint-additional-data";
+        String url = externalManagementUrl + "/external-data/complaints";
 
         return runRest(url, () ->{
             ResponseEntity<Map<String, List<AdditionalData>>> response = restTemplate.exchange(

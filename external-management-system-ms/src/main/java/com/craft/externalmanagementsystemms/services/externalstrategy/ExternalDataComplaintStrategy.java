@@ -10,6 +10,7 @@ import com.craft.externalmanagementsystemms.domain.repositores.RegisterLoadingEx
 import com.craft.externalmanagementsystemms.web.annontation.DurationLog;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -46,6 +48,31 @@ public abstract class ExternalDataComplaintStrategy {
         registerLoadingExternalData.setSourceId(sourceId);
 
         return registerLoadingExternalData;
+    }
+
+    public List<RegisterLoadingExternalData> applyLoadingData(List<RegisterLoadingExternalData> filterByType) {
+        if(CollectionUtils.isEmpty(filterByType)){
+            return filterByType;
+        }
+
+        List<RegisterLoadingExternalData> failedToLoading = new LinkedList<>(filterByType);
+
+        for(RegisterLoadingExternalData registerLoadingExternalData: filterByType){
+            ResponseEntity<ObjectNode> data = getExternalDataById(registerLoadingExternalData);
+
+            if(data == null){
+                log.error("There is no connection with service that supply data for {}", getDataType());
+                break;
+            }
+
+            if(data.getBody() != null){
+                saveExternalDataIntoCompliant(registerLoadingExternalData, data);
+            }
+
+            failedToLoading.remove(registerLoadingExternalData);
+        }
+
+        return failedToLoading;
     }
 
     @DurationLog
@@ -88,7 +115,7 @@ public abstract class ExternalDataComplaintStrategy {
                         return;
                     }
 
-                    ResponseEntity<Object> data = getExternalDataById(registerLoadingExternalData);
+                    ResponseEntity<ObjectNode> data = getExternalDataById(registerLoadingExternalData);
                     if(data == null){
                         log.error("There is no connection with service that supply data for {}", getDataType());
                         thereIsConnectionWithServer.set(false);
@@ -97,8 +124,8 @@ public abstract class ExternalDataComplaintStrategy {
                     }
                     if(data.getBody() != null){
                         saveExternalDataIntoCompliant(registerLoadingExternalData, data);
-                        toRemove.add(registerLoadingExternalData);
                     }
+                    toRemove.add(registerLoadingExternalData);
                 }
             }, externalDataJob);
 
@@ -111,11 +138,11 @@ public abstract class ExternalDataComplaintStrategy {
         isInProcess.set(false);
     }
 
-    protected abstract ResponseEntity<Object> getExternalDataById(RegisterLoadingExternalData registerLoadingExternalData);
+    protected abstract ResponseEntity<ObjectNode> getExternalDataById(RegisterLoadingExternalData registerLoadingExternalData);
 
 
     @Transactional
-    protected void saveExternalDataIntoCompliant(RegisterLoadingExternalData registerLoadingExternalData, ResponseEntity<Object> data) {
+    protected void saveExternalDataIntoCompliant(RegisterLoadingExternalData registerLoadingExternalData, ResponseEntity<ObjectNode> data) {
         complaintSystemAdditionalDataRepository.findById(registerLoadingExternalData.getComplaintId())
                 .ifPresent(complaintSystemAdditionalData -> {
                     try {
@@ -131,11 +158,18 @@ public abstract class ExternalDataComplaintStrategy {
         return isInProcess.get();
     }
 
+    public AdditionalData convert(ObjectNode body) throws JsonProcessingException {
+        ObjectNode objectNodeData = objectMapper.createObjectNode();
+        objectNodeData.set(getTypeJsonObject(), body);
+        return objectMapper.treeToValue(objectNodeData, AdditionalData.class);
+    }
+
     /////////////////// abstracts /////////////////////////
 
     public abstract RegisterLoadingExternalData createRegisterLoadingExternalData(BaseComplaintSystemDto baseComplaintSystemDto);
 
-    public abstract AdditionalData convert(Object body) throws JsonProcessingException;
+    public abstract String getTypeJsonObject();
 
     public abstract DataType getDataType();
+
 }

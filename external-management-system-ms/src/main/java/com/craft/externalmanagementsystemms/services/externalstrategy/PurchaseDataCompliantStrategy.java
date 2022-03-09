@@ -8,6 +8,7 @@ import com.craft.externalmanagementsystemms.domain.model.entites.RegisterLoading
 import com.craft.externalmanagementsystemms.services.rests.PurchaseManagementClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class PurchaseDataCompliantStrategy extends ExternalDataComplaintStrategy
     private PurchaseManagementClient purchaseManagementClient;
 
     @Override
-    protected ResponseEntity<Object> getExternalDataById(RegisterLoadingExternalData registerLoadingExternalData) {
+    protected ResponseEntity<ObjectNode> getExternalDataById(RegisterLoadingExternalData registerLoadingExternalData) {
         return purchaseManagementClient.getPurchaseData((UUID) registerLoadingExternalData.getSourceId());
     }
 
@@ -33,11 +34,9 @@ public class PurchaseDataCompliantStrategy extends ExternalDataComplaintStrategy
     }
 
     @Override
-    public AdditionalData convert(Object body) throws JsonProcessingException {
-        JsonNode jsonNode = objectMapper.valueToTree(body);
-        return objectMapper.treeToValue(jsonNode, PurchaseData.class);
+    public String getTypeJsonObject() {
+        return "purchaseData";
     }
-
 
     @Override
     public DataType getDataType() {

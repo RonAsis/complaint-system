@@ -1,6 +1,7 @@
 package com.craft.externalmanagementsystemms.services.impl;
 
 import com.craft.complaint.external.data.AdditionalData;
+import com.craft.complaint.external.data.DataType;
 import com.craft.complaint.management.api.dtos.BaseComplaintSystemDto;
 import com.craft.externalmanagementsystemms.domain.model.entites.ComplaintSystemAdditionalData;
 import com.craft.externalmanagementsystemms.domain.model.entites.RegisterLoadingExternalData;
@@ -8,7 +9,9 @@ import com.craft.externalmanagementsystemms.domain.repositores.ComplaintSystemAd
 import com.craft.externalmanagementsystemms.domain.repositores.RegisterLoadingExternalDataRepository;
 import com.craft.externalmanagementsystemms.services.ExternalManagementSystemService;
 import com.craft.externalmanagementsystemms.services.externalstrategy.ExternalDataComplaintStrategy;
+import com.craft.externalmanagementsystemms.web.annontation.DurationLog;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ExternalManagementSystemServiceImpl implements ExternalManagementSystemService {
 
     private final ComplaintSystemAdditionalDataRepository complaintSystemAdditionalDataRepository;
@@ -42,7 +46,8 @@ public class ExternalManagementSystemServiceImpl implements ExternalManagementSy
 
     @Override
     public void registerNewComplaintSystem(BaseComplaintSystemDto baseComplaintSystemDto) {
-        if(baseComplaintSystemDto == null || baseComplaintSystemDto.getId() == null){
+        if(baseComplaintSystemDto == null || baseComplaintSystemDto.getId() == null ||
+                complaintSystemAdditionalDataRepository.existsById(baseComplaintSystemDto.getId())){
             return;
         }
 
@@ -50,19 +55,49 @@ public class ExternalManagementSystemServiceImpl implements ExternalManagementSy
                 externalDataComplaintStrategy -> externalDataComplaintStrategy.createRegisterLoadingExternalData(baseComplaintSystemDto))
                 .collect(Collectors.toList());
 
-        if(CollectionUtils.isEmpty(registerLoadingExternalData)){
-            return;
-        }
-
-        registerLoadingExternalDataRepository.saveAll(registerLoadingExternalData);
         complaintSystemAdditionalDataRepository.save(new ComplaintSystemAdditionalData(baseComplaintSystemDto.getId()));
+
+        applyLoadingData(registerLoadingExternalData);
     }
 
+    @DurationLog
     @Scheduled(fixedDelayString="${loading.external.data.schedule}")
     public void applyLoadingData(){
         externalDataComplaintStrategies.stream()
                 .filter(externalDataComplaintStrategy -> !externalDataComplaintStrategy.isInProcess())
                 .forEach(ExternalDataComplaintStrategy::applyLoadingData);
+    }
+
+    /**
+     * apply loading data for specific items
+     */
+    private void applyLoadingData(List<RegisterLoadingExternalData> registerLoadingExternalData){
+        List<RegisterLoadingExternalData> allFailedLoadingData = new LinkedList<>();
+
+        externalDataComplaintStrategies
+                .forEach(externalDataComplaintStrategy -> {
+                    List<RegisterLoadingExternalData> failedLoadingData = externalDataComplaintStrategy.applyLoadingData(filterByType(externalDataComplaintStrategy.getDataType(), registerLoadingExternalData));
+
+                    if(!CollectionUtils.isEmpty(failedLoadingData)){
+                        allFailedLoadingData.addAll(failedLoadingData);
+                    }
+                });
+
+       if(CollectionUtils.isEmpty(allFailedLoadingData)){
+           return;
+       }
+
+        registerLoadingExternalDataRepository.saveAll(allFailedLoadingData);
+    }
+
+    private List<RegisterLoadingExternalData> filterByType(DataType dataType, List<RegisterLoadingExternalData> registerLoadingExternalDatas) {
+        if(CollectionUtils.isEmpty(registerLoadingExternalDatas) || dataType == null){
+            return registerLoadingExternalDatas;
+        }
+
+        return registerLoadingExternalDatas.stream()
+                .filter(registerLoadingExternalData -> registerLoadingExternalData.getDataType() == dataType)
+                .collect(Collectors.toList());
     }
 
     @Transactional

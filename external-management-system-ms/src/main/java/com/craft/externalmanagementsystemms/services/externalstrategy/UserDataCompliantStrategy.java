@@ -3,11 +3,13 @@ package com.craft.externalmanagementsystemms.services.externalstrategy;
 import com.craft.complaint.external.data.AdditionalData;
 import com.craft.complaint.external.data.DataType;
 import com.craft.complaint.external.data.externaldata.PurchaseData;
+import com.craft.complaint.external.data.externaldata.UserData;
 import com.craft.complaint.management.api.dtos.BaseComplaintSystemDto;
 import com.craft.externalmanagementsystemms.domain.model.entites.RegisterLoadingExternalData;
 import com.craft.externalmanagementsystemms.services.rests.UserManagementClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -26,13 +28,12 @@ public class UserDataCompliantStrategy extends ExternalDataComplaintStrategy{
     }
 
     @Override
-    public AdditionalData convert(Object body) throws JsonProcessingException {
-        JsonNode jsonNode = objectMapper.valueToTree(body);
-        return objectMapper.treeToValue(jsonNode, PurchaseData.class);
+    public String getTypeJsonObject() {
+        return "userData";
     }
 
     @Override
-    protected ResponseEntity<Object> getExternalDataById(RegisterLoadingExternalData registerLoadingExternalData) {
+    protected ResponseEntity<ObjectNode> getExternalDataById(RegisterLoadingExternalData registerLoadingExternalData) {
         return userManagementClient.getUserData((UUID) registerLoadingExternalData.getSourceId());
     }
 

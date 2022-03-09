@@ -1,6 +1,7 @@
 package com.craft.externalmanagementsystemms.services.rests;
 
 import com.craft.complaint.common.utils.RestService;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -17,16 +18,16 @@ public class PurchaseManagementClient extends RestService {
     @Value("${purchase.management.url}")
     private String purchaseManagementUrl;
 
-    public ResponseEntity<Object> getPurchaseData(UUID purchaseId) {
+    public ResponseEntity<ObjectNode> getPurchaseData(UUID purchaseId) {
         log.info("Start getPurchaseData, userId: {} ", purchaseId);
         String url = purchaseManagementUrl + "/purchases/" + purchaseId;
 
         return runRest(url, () -> {
-            ResponseEntity<Object> response = restTemplate.exchange(
+            ResponseEntity<ObjectNode> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
                     null,
-                    new ParameterizedTypeReference<Object>() {
+                    new ParameterizedTypeReference<ObjectNode>() {
                     });
             log.info("OUT: Rest call to {}", url);
             return response;
