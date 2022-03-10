@@ -218,7 +218,7 @@ public abstract class ExternalDataComplaintStrategy {
 
     ///////////////////////////////// converters /////////////////////////////
 
-    public AdditionalData convert(ObjectNode body) throws JsonProcessingException {
+    private AdditionalData convert(ObjectNode body) throws JsonProcessingException {
         ObjectNode objectNodeData = objectMapper.createObjectNode();
         objectNodeData.set(getTypeJsonObject(), body);
         return objectMapper.treeToValue(objectNodeData, AdditionalData.class);
@@ -230,7 +230,7 @@ public abstract class ExternalDataComplaintStrategy {
 
     public abstract RegisterLoadingExternalData createRegisterLoadingExternalData(BaseComplaintSystemDto baseComplaintSystemDto);
 
-    public abstract String getTypeJsonObject();
+    protected abstract String getTypeJsonObject();
 
     public abstract DataType getDataType();
 
