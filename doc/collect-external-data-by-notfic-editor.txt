@@ -1,0 +1,69 @@
+@startuml
+
+box "Spring"
+participant Sechduler
+end box
+
+box "external-management-system-ms"
+participant ExternalManagemetSystemReceive
+participant ExternalManagementSystemService
+participant ExternalDataComplaintStrategy
+participant ExternalComplaintSystemDataRepository
+participant RegisterLoadingExternalDataRepository
+
+end box
+
+
+box "External Systems"
+participant UserSystem
+participant ProductSystem
+
+
+
+end box
+== Collect addtional data for complaint by Notfication ==
+
+ExternalManagemetSystemReceive -> ExternalManagementSystemService:  complaintSystemNotfic
+activate ExternalManagemetSystemReceive
+activate ExternalManagementSystemService
+
+ExternalManagementSystemService-> ExternalManagementSystemService: createEmptyExternalComplaintSystemData(complaintSystemNotfic)
+activate ExternalManagementSystemService
+ExternalManagementSystemService -> ExternalComplaintSystemDataRepository: save(externalComplaintSystemData)
+deactivate ExternalManagementSystemService
+
+  activate ExternalComplaintSystemDataRepository
+  deactivate ExternalComplaintSystemDataRepository
+ExternalManagementSystemService -> ExternalDataComplaintStrategy: applyLoading(baseComplaintSystemDto)
+activate ExternalDataComplaintStrategy
+
+ExternalDataComplaintStrategy --> UserSystem: getData(soruceId)
+activate UserSystem
+UserSystem --> ExternalDataComplaintStrategy: responseEntity
+deactivate UserSystem
+alt responseEntity == null
+
+ExternalDataComplaintStrategy-> ExternalDataComplaintStrategy: createRegisterLoadingExternalData(baseComplaintSystemDto)
+activate ExternalDataComplaintStrategy
+ExternalDataComplaintStrategy -> RegisterLoadingExternalDataRepository : save(registerLoadingExternalData)
+deactivate ExternalDataComplaintStrategy
+
+activate RegisterLoadingExternalDataRepository
+
+deactivate RegisterLoadingExternalDataRepository
+
+else
+  ExternalDataComplaintStrategy -> ExternalComplaintSystemDataRepository: update(data)
+  activate ExternalComplaintSystemDataRepository
+  deactivate ExternalComplaintSystemDataRepository
+end
+deactivate ExternalDataComplaintStrategy
+deactivate ExternalManagementSystemService
+deactivate ExternalManagemetSystemReceive
+
+== Collect addtional data for complaint by Sechduler ==
+
+Sechduler -> ExternalManagementSystemService: applyLoading()
+ExternalManagementSystemService -> ExternalDataComplaintStrategy:  applyLoading()
+
+@enduml

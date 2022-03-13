@@ -1,0 +1,47 @@
+@startuml
+
+
+box "complaint-management-ms"
+participant ComplaintManagementController
+participant ComplaintManagementService
+participant ComplaintSystemRepository
+participant ComplaintManagementNotificationSender
+participant RabbitTemplate
+participant ComplaintManagementConverter
+
+end box
+
+box "external-management-system-ms"
+
+end box
+
+== create complaint ==
+
+ComplaintManagementController -> ComplaintManagementService:  createCompliantSystem(UUID userId, String subject, string complaint, UUID purhaseId)
+activate ComplaintManagementController
+activate ComplaintManagementService
+
+ComplaintManagementService -> ComplaintSystemRepository: save(complaintSystem)
+activate ComplaintSystemRepository
+ComplaintSystemRepository --> ComplaintManagementService: complaintSystemSaved
+deactivate ComplaintSystemRepository
+
+activate ComplaintManagementNotificationSender
+
+ComplaintManagementService -> ComplaintManagementNotificationSender: sendNotfication(complaintSystemSaved, CREATED) 
+
+
+...  ~In deffrent thread~~ ...
+ComplaintManagementNotificationSender -> RabbitTemplate
+deactivate ComplaintManagementNotificationSender
+
+
+activate ComplaintManagementConverter
+ComplaintManagementService -> ComplaintManagementConverter: convert(complaintSystemSaved)
+ComplaintManagementConverter --> ComplaintManagementService: baseComplaintSystemDto
+deactivate ComplaintManagementConverter
+
+ComplaintManagementService--> ComplaintManagementController: baseComplaintSystemDto
+deactivate ComplaintManagementService
+
+@enduml

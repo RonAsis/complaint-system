@@ -1,0 +1,44 @@
+@startuml
+
+box "component-system-ms"
+participant ComplaintManagementController
+participant ComplaintManagementService
+participant ComplaintSystemRepository
+participant ExternalManagementSystemServiceRest
+participant ComplaintManagementConverter
+
+end box
+
+box "external-management-system-ms"
+participant ExternalManagemetSystemController
+participant ExternalManagementSystemService
+participant ExternalComplaintSystemDataRepository
+
+end box
+
+
+box "External Systems"
+participant UserSystem
+participant ProductSystem
+
+
+end box
+== get complaint system ==
+
+ComplaintManagementController -> ComplaintManagementService:  getComplaintSystem(id)
+ComplaintManagementService -> ComplaintSystemRepository:  findById(id)
+ComplaintSystemRepository --> ComplaintManagementService: complaintSystem
+ComplaintManagementService -> ExternalManagementSystemServiceRest: getComplaintSystemAddionalInfo(id)
+ExternalManagementSystemServiceRest -> ExternalManagemetSystemController: getComplaintSystemAddionalInfo(id)
+ExternalManagemetSystemController -> ExternalManagementSystemService: getComplaintSystemAddionalInfo(id)
+ExternalManagementSystemService -> ExternalComplaintSystemDataRepository: findByid(id)
+ExternalComplaintSystemDataRepository --> ExternalManagementSystemService: additionalInfo
+ExternalManagementSystemService --> ExternalManagemetSystemController: additionalInfo
+ExternalManagemetSystemController --> ExternalManagementSystemServiceRest: additionalInfo
+ExternalManagementSystemServiceRest --> ComplaintManagementService: additionalInfo
+ComplaintManagementService -> ComplaintManagementConverter: complaintSystem, additionalInfo
+ComplaintManagementConverter --> ComplaintManagementService: complaintSystemDto
+ComplaintManagementService --> ComplaintManagementController: complaintSystemDto
+
+
+@enduml
